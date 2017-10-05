@@ -1,0 +1,270 @@
+#include<math.h>
+int RightEncoderPinB=1;
+
+int RightEncoderPinA=2;
+
+int  motor1 = 8;
+
+int  motor11 = 9;
+
+int  motor2 = 6;
+
+int  motor22 = 7; 
+
+double RightEncoderPos;
+
+double LeftEncoderPos;
+
+ void setup()
+   {	pinMode(motor1, OUTPUT);     
+ 	pinMode(motor11,OUTPUT);
+  	pinMode(motor2,OUTPUT);
+  	pinMode(motor22,OUTPUT);
+  	Serial.begin(9600);
+  	attachInterrupt(0, LeftEncoderEvent, CHANGE);
+  	attachInterrupt(1, RightEncoderEvent, CHANGE);
+  }
+
+
+
+ void LeftEncoderEvent() 
+  {
+  
+      LeftEncoderPos = LeftEncoderPos + 0.33;
+      
+  }
+  
+  void RightEncoderEvent()
+  {
+  
+      RightEncoderPos = RightEncoderPos + 0.33;
+    
+  }
+  void set()
+   {
+
+    LeftEncoderPos = 0;
+    RightEncoderPos = 0;
+ 
+   }
+
+
+
+ 
+
+void left(double degree)
+{
+ 	double len;
+ 	len = 17.2 * degree;	
+	while(1)
+          {
+		digitalWrite(motor1,HIGH);
+         	
+		digitalWrite(motor11, LOW);   
+
+  	        digitalWrite(motor2,LOW); 
+
+                digitalWrite(motor22,HIGH);
+
+                if((int)RightEncoderPos==(int)len)
+        	 {
+         		digitalWrite(motor1,LOW);
+    
+	       		digitalWrite(motor11, LOW);    
+  
+         		digitalWrite(motor2,LOW); 
+  
+	       		digitalWrite(motor22,LOW);
+       		 	
+			delay(1000);  
+       			set();
+                        break;
+                }
+	  }	
+       return;
+
+}
+void right(double degree)
+{
+ 	double len;
+ 	len = 17.2 * degree;	
+	while(1)
+          {
+		digitalWrite(motor1,LOW);
+         	
+		digitalWrite(motor11, HIGH);   
+
+  	        digitalWrite(motor2,HIGH); 
+
+                digitalWrite(motor22,LOW);
+
+                if((int)RightEncoderPos==(int)len)
+        	 {
+         		digitalWrite(motor1,LOW);
+    
+	       		digitalWrite(motor11, LOW);    
+  
+         		digitalWrite(motor2,LOW); 
+  
+	       		digitalWrite(motor22,LOW);
+       		 	
+			delay(1000);  
+       			set();
+                        break;
+                }
+	  }	
+       return;
+
+}
+void forword(int distance)
+{
+  while(1)
+   {
+ 	 digitalWrite(motor1,HIGH);
+         
+	 digitalWrite(motor11, LOW);   
+     
+         digitalWrite(motor2,HIGH); 
+  
+         digitalWrite(motor22,LOW);
+  
+         if((int)RightEncoderPos==distance)
+            {
+         	digitalWrite(motor1,LOW);
+         
+		digitalWrite(motor11, LOW);   
+     
+	        digitalWrite(motor2,LOW); 
+          	
+		digitalWrite(motor22,LOW);
+       		delay(1000);  
+       		set();
+                break ;  
+              } 
+    }
+
+
+              
+              
+}
+
+
+void reverse(int distance)
+{
+  while(1)
+   {
+ 	 digitalWrite(motor1,LOW);
+         
+	 digitalWrite(motor11, HIGH);   
+     
+         digitalWrite(motor2,LOW); 
+  
+         digitalWrite(motor22,HIGH);
+  
+         if((int)RightEncoderPos==distance)
+            {
+         	digitalWrite(motor1,LOW);
+         
+		digitalWrite(motor11, LOW);   
+     
+	        digitalWrite(motor2,LOW); 
+          	
+		digitalWrite(motor22,LOW);
+       		delay(1000);  
+       		set();
+                break ;  
+              } 
+    }
+
+
+              
+              
+}
+void coordinates(int x, int y)
+{
+   if(x == 0 && y == 0)
+     {
+         return ;
+     }
+     
+   else
+     {   
+	 if(x == 0)
+            {
+                if(y > 0)
+                  {
+             
+                     forword(y);
+           	     return;
+                  }
+                else
+                  {
+                      reverse(-y);
+             	      return;
+	          }
+            }
+	  else
+             {     
+               if(x > 0)
+                 {
+                     right(atan(1.57));
+                     forword(x);
+                     return; 
+		}
+               else
+                 {
+                     left(atan(1.57));
+                     forword(-x);
+ 		     return;
+		 }
+       	    }
+ 
+         if (y/x < 0)	
+	    { 
+       		left(atan2(y,x));
+       		if(x < 0 && y > 0)
+        	  {
+              		forword(sqrt(square(x) + square(y)));
+
+	          }
+       		else
+		  {
+			reverse(sqrt(square(x) + square(y)));
+		  }
+		return;
+
+           }
+       else
+           {
+		right(atan2(y,x));
+                if(x > 0 && y > 0)  
+                  { 
+			forword(sqrt(square(x) + square(y)));
+		  }
+               else
+                  {
+                        reverse(sqrt(square(x) + square(y)));
+                  }
+              return;
+           }
+     }
+
+
+
+} 
+
+void loop()
+{
+	coordinates(4,4);
+
+
+         digitalWrite(motor1,LOW);
+         
+	 digitalWrite(motor11, LOW);   
+     
+         digitalWrite(motor2,LOW); 
+  
+         digitalWrite(motor22,LOW);
+ 
+         delay(20000);
+}
